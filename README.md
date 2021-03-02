@@ -56,22 +56,22 @@ The configuration parameters specific to the mediator and the mediator's metadat
           "name": "THSCP-Mediator-FFARS and MUSE Route",
           "host": "localhost",
           "port": "3021",
-          "path": " /thscp",
+          "path": "/thscp",
           "type": "http"
         }
       ],
       "defaultChannelConfig": [
         {
-          "name": "THSCP-Mediator-FFARS and MUSE",
-          "urlPattern": "^ /thscp$",
+          "name": "FFARS and MUSE to THSCP Channel",
+          "urlPattern": "^/thscp$",
           "type": "http",
-          "allow": ["thscp-mediator-ffarsandmuse"],
+          "allow": ["thscp-mediator-ffarsandmuse-role"],
           "routes": [
             {
               "name": "THSCP-Mediator-FFARS and MUSE Route",
               "host": "localhost",
               "port": "3021",
-              "path": " /thscp",
+              "path": "/thscp",
               "type": "http",
               "primary": "true"
             }
