@@ -1,6 +1,7 @@
 # FFARS and MUSE to Tanzania Health Supply Chain Mediator
 
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/83dcc6b5f72c48b4aa182849a77d5307)](https://app.codacy.com/gh/SoftmedTanzania/thscp-mediator-ffars-muse?utm_source=github.com&utm_medium=referral&utm_content=SoftmedTanzania/thscp-mediator-ffars-muse&utm_campaign=Badge_Grade_Settings)
 [![Java CI Badge](https://github.com/SoftmedTanzania/thscp-mediator-ffars-muse/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/SoftmedTanzania/thscp-mediator-ffars-muse/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 [![Coverage Status](https://coveralls.io/repos/github/SoftmedTanzania/thscp-mediator-ffars-muse/badge.svg?branch=development)](https://coveralls.io/github/SoftmedTanzania/thscp-mediator-ffars-muse?branch=development)
 
