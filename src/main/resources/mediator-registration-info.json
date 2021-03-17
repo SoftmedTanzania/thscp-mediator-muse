@@ -1,29 +1,33 @@
 {
   "urn": "urn:uuid:ee883220-7b2d-11eb-851e-610d06e9c9de",
   "version": "0.1.0",
-  "name": "THSCP-Mediator-FFARS and MUSE",
-  "description": "A mediator for handling system integrations between FFARS and MUSE with THSCP",
+  "name": "FFARS & MUSE to THSCP Mediator",
+  "description": "n OpenHIM mediator for handling integration of data from FFARS & MUSE to THSCP systems.",
   "endpoints": [
     {
-      "name": "THSCP-Mediator-FFARS and MUSE Route",
+      "name": "THSCP Health Commodities Funding Route",
       "host": "localhost",
       "port": "3021",
-      "path": "/thscp",
+      "path": "/thscp/financing/bulk",
       "type": "http"
     }
   ],
   "defaultChannelConfig": [
     {
-      "name": "FFARS and MUSE to THSCP Channel",
-      "urlPattern": "^/thscp$",
+      "name": "FFARS & MUSE - THSCP Health Commodities Funding Channel",
+      "urlPattern": "^/ffars-muse-thscp-health-commodities-funding$",
+      "description": "An OpenHIM channel for handling sharing of Health Commodities data from FFARS & MUSE to THSCP.",
       "type": "http",
       "allow": ["thscp-mediator-ffarsandmuse-role"],
+      "methods": [
+        "POST"
+      ],
       "routes": [
         {
-          "name": "THSCP-Mediator-FFARS and MUSE Route",
+          "name": "THSCP Health Commodities Funding Route",
           "host": "localhost",
           "port": "3021",
-          "path": "/thscp",
+          "path": "/thscp/financing/bulk",
           "type": "http",
           "primary": "true"
         }
