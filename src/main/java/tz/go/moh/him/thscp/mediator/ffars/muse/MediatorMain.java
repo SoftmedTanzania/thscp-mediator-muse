@@ -6,6 +6,8 @@ import akka.event.LoggingAdapter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openhim.mediator.engine.*;
+import tz.go.moh.him.thscp.mediator.ffars.muse.orchestrators.HealthCommoditiesFundingOrchestrator;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,18 +18,13 @@ public class MediatorMain {
     private static RoutingTable buildRoutingTable() throws RoutingTable.RouteAlreadyMappedException {
         RoutingTable routingTable = new RoutingTable();
 
-        //TODO Configure routes here
-        //...
-        routingTable.addRoute("/thscp", DefaultOrchestrator.class);
+        routingTable.addRoute("/thscp/financing/bulk", HealthCommoditiesFundingOrchestrator.class);
 
         return routingTable;
     }
 
     private static StartupActorsConfig buildStartupActorsConfig() {
         StartupActorsConfig startupActors = new StartupActorsConfig();
-
-        //TODO Add own startup actors here
-        //...
 
         return startupActors;
     }
@@ -91,6 +88,7 @@ public class MediatorMain {
         }
 
         MediatorConfig config = loadConfig(configPath);
+        config.setSSLContext(new MediatorConfig.SSLContext(true));
         final MediatorServer server = new MediatorServer(system, config);
 
         //setup shutdown hook
