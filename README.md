@@ -27,7 +27,7 @@ The configuration parameters specific to the mediator and destination system can
     # Mediator Properties
     mediator.name=THSCP-Mediator-FFARS-and-MUSE
     mediator.host=localhost
-    mediator.port=3021
+    mediator.port=3022
     mediator.timeout=60000
     mediator.heartbeats=true
     
@@ -56,7 +56,7 @@ The configuration parameters specific to the mediator and the mediator's metadat
         {
           "name": "THSCP-Mediator-FFARS and MUSE Route",
           "host": "localhost",
-          "port": "3021",
+          "port": "3022",
           "path": "/thscp",
           "type": "http"
         }
@@ -71,7 +71,7 @@ The configuration parameters specific to the mediator and the mediator's metadat
             {
               "name": "THSCP-Mediator-FFARS and MUSE Route",
               "host": "localhost",
-              "port": "3021",
+              "port": "3022",
               "path": "/thscp",
               "type": "http",
               "primary": "true"
