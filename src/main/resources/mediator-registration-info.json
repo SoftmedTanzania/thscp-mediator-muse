@@ -18,7 +18,7 @@
       "urlPattern": "^/ffars-muse-thscp-health-commodities-funding$",
       "description": "An OpenHIM channel for handling sharing of Health Commodities data from FFARS & MUSE to THSCP.",
       "type": "http",
-      "allow": ["thscp-mediator-ffarsandmuse-role"],
+      "allow": ["ffars-role", "muse-role"],
       "methods": [
         "POST"
       ],

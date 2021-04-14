@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import tz.go.moh.him.thscp.mediator.ffars.muse.domain.Indicator;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -174,26 +176,29 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
 
             Gson gson = new Gson();
 
-            Indicator expected;
+            Type domainType = new TypeToken<List<Indicator>>() {}.getType();
+
+            List<Indicator> expected;
 
             try {
-                expected = gson.fromJson(IOUtils.toString(stream), Indicator.class);
+
+                expected = gson.fromJson(IOUtils.toString(stream), domainType);
             } catch (IOException e) {
                 // TODO: handle this issue
                 return;
             }
 
-            Indicator actual = gson.fromJson(msg.getBody(), Indicator.class);
+            List<Indicator> actual = gson.fromJson(msg.getBody(), domainType);
 
-            assertEquals(expected.getUuid(), actual.getUuid());
-            assertEquals(expected.getAllocatedFund(), actual.getAllocatedFund());
-            assertEquals(expected.getDisbursedFund(), actual.getDisbursedFund());
-            assertEquals(expected.getProgram(), actual.getProgram());
-            assertEquals(expected.getFacilityId(), actual.getFacilityId());
-            assertEquals(expected.getSource(), actual.getSource());
-            assertEquals(expected.getProductCode(), actual.getProductCode());
-            assertEquals(expected.getStartDate(), actual.getStartDate());
-            assertEquals(expected.getEndDate(), actual.getEndDate());
+            assertEquals(expected.get(0).getUuid(), actual.get(0).getUuid());
+            assertEquals(expected.get(0).getAllocatedFund(), actual.get(0).getAllocatedFund());
+            assertEquals(expected.get(0).getDisbursedFund(), actual.get(0).getDisbursedFund());
+            assertEquals(expected.get(0).getProgram(), actual.get(0).getProgram());
+            assertEquals(expected.get(0).getFacilityId(), actual.get(0).getFacilityId());
+            assertEquals(expected.get(0).getSource(), actual.get(0).getSource());
+            assertEquals(expected.get(0).getProductCode(), actual.get(0).getProductCode());
+            assertEquals(expected.get(0).getStartDate(), actual.get(0).getStartDate());
+            assertEquals(expected.get(0).getEndDate(), actual.get(0).getEndDate());
         }
     }
 }

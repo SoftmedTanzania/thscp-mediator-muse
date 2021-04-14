@@ -1,4 +1,4 @@
-{
+[{
   "uuid": "3d378375-6a0c-4974-b737-4160c293774d",
   "allocatedFund": 200000,
   "disbursedFund": 100000,
@@ -8,4 +8,4 @@
   "program": "COVID-19",
   "source": "GOT",
   "startDate": "2020-12-03"
-}
+}]
