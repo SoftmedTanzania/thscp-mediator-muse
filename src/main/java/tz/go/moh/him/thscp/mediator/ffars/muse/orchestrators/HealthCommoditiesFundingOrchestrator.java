@@ -77,21 +77,21 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
     /**
      * Handles data validations
      *
-     * @param indicator The object to be validated
+     * @param indicators The object to be validated
      */
-    protected void validateData(Indicator indicator) {
+    protected void validateData(List<Indicator> indicators) {
         List<ResultDetail> resultDetailsList = new ArrayList<>();
 
-        if (indicator == null) {
+        if (indicators == null) {
             resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("ERROR_INVALID_PAYLOAD"), null));
         } else {
-            resultDetailsList.addAll(validateRequiredFields(indicator));
+            resultDetailsList.addAll(validateRequiredFields(indicators));
         }
 
         if (resultDetailsList.size() != 0) {
             // Adding the validation results to the Error message object
             ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.setSource(new Gson().toJson(indicator));
+            errorMessage.setSource(new Gson().toJson(indicators));
             errorMessage.setResultsDetails(resultDetailsList);
             errorMessages.add(errorMessage);
         }
@@ -100,32 +100,35 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
     /**
      * Validate Health Commodities Indicator data
      *
-     * @param indicator to be validated
+     * @param indicators to be validated
      * @return array list of validation results details for failed validations
      */
-    public List<ResultDetail> validateRequiredFields(Indicator indicator) {
+    public List<ResultDetail> validateRequiredFields(List<Indicator> indicators) {
         List<ResultDetail> resultDetailsList = new ArrayList<>();
 
-        if (StringUtils.isBlank(indicator.getUuid()))
-            resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("UUID_IS_BLANK"), null));
+        for (Indicator indicator: indicators
+             ) {
+            if (StringUtils.isBlank(indicator.getUuid()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("UUID_IS_BLANK"), null));
 
-        if (StringUtils.isBlank(indicator.getProductCode()))
-            resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("PRODUCT_CODE_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getProductCode()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("PRODUCT_CODE_IS_BLANK"), null));
 
-        if (StringUtils.isBlank(indicator.getProgram()))
-            resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("PROGRAM_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getProgram()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("PROGRAM_IS_BLANK"), null));
 
-        if (StringUtils.isBlank(indicator.getSource()))
-            resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("SOURCE_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getSource()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("SOURCE_IS_BLANK"), null));
 
-        if (StringUtils.isBlank(indicator.getFacilityId()))
-            resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("FACILITY_ID_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getFacilityId()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("FACILITY_ID_IS_BLANK"), null));
 
-        if (StringUtils.isBlank(indicator.getStartDate()))
-            resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("START_DATE_ID_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getStartDate()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("START_DATE_ID_IS_BLANK"), null));
 
-        if (StringUtils.isBlank(indicator.getEndDate()))
-            resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("END_DATE_ID_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getEndDate()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("END_DATE_ID_IS_BLANK"), null));
+        }
 
         return resultDetailsList;
     }
@@ -143,15 +146,15 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
 
             log.info("Received request: " + originalRequest.getHost() + " " + originalRequest.getMethod() + " " + originalRequest.getPath());
 
-            Indicator indicator = null;
+            List<Indicator> indicators = null;
             try {
-                Type domainType = new TypeToken<Indicator>() {}.getType();
-                indicator = new Gson().fromJson((originalRequest).getBody(), domainType);
+                Type domainType = new TypeToken<List<Indicator>>() {}.getType();
+                indicators = new Gson().fromJson((originalRequest).getBody(), domainType);
             } catch (com.google.gson.JsonSyntaxException ex) {
                 errorMessages.add(new ErrorMessage(originalRequest.getBody(), Arrays.asList(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("ERROR_INVALID_PAYLOAD"), null))));
             }
 
-            validateData(indicator);
+            validateData(indicators);
 
             if (!errorMessages.isEmpty()) {
                 FinishRequest finishRequest = new FinishRequest(new Gson().toJson(errorMessages), "text/json", HttpStatus.SC_BAD_REQUEST);
