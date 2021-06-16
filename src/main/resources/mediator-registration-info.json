@@ -1,7 +1,7 @@
 {
   "urn": "urn:uuid:ee883220-7b2d-11eb-851e-610d06e9c9de",
   "version": "0.1.0",
-  "name": "FFARS & MUSE to THSCP Mediator",
+  "name": "FFARS & MUSE - THSCP Mediator",
   "description": "An OpenHIM mediator for handling integration of data from FFARS & MUSE to THSCP systems.",
   "endpoints": [
     {
