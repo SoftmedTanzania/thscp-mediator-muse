@@ -24,9 +24,6 @@ public class RSAUtils {
     public static final String EC_CURVE_NAME = "secp256k1";
     private static final Logger log = LoggerFactory.getLogger(RSAUtils.class);
 
-    public RSAUtils() {
-    }
-
     public static String signPayload(String payload, String privateKeyString) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException, UnsupportedEncodingException {
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(FACTORY_TYPE);

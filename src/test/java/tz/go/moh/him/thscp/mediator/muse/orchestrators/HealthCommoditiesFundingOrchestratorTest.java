@@ -49,6 +49,8 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
                 "    \"destinationPort\": \"3000\",\n" +
                 "    \"destinationPath\": \"/test\",\n" +
                 "    \"accessTokenUri\":\"tokenUri\",\n" +
+                "    \"destinationUsername\":\"username\",\n" +
+                "    \"destinationPassword\":\"password\",\n" +
                 "    \"destinationScheme\":\"http\"\n" +
                 "  }"));
 
