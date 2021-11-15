@@ -167,7 +167,7 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
             if (config.getDynamicConfig().isEmpty()) {
                 log.debug("Dynamic config is empty, using config from mediator.properties");
                 publicKey = config.getProperty("source.publicKey");
-                privateKey = config.getProperty("source.privateKey");
+                privateKey = config.getProperty("privateKey");
             } else {
                 log.debug("Using dynamic config");
                 JSONObject connectionProperties = new JSONObject(config.getDynamicConfig()).getJSONObject("financeBusProperties");
