@@ -5,13 +5,13 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.codehaus.plexus.util.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.messages.FinishRequest;
@@ -19,18 +19,34 @@ import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
 import org.openhim.mediator.engine.messages.MediatorHTTPResponse;
 import tz.go.moh.him.mediator.core.domain.ErrorMessage;
 import tz.go.moh.him.mediator.core.domain.ResultDetail;
+import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
+import tz.go.moh.him.thscp.mediator.muse.domain.FinanceBusResponse;
+import tz.go.moh.him.thscp.mediator.muse.domain.HealthCommodityFundingRequest;
 import tz.go.moh.him.thscp.mediator.muse.domain.Indicator;
+import tz.go.moh.him.thscp.mediator.muse.utils.RSAUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the Health Commodities Funding orchestrator.
  */
 public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
+    /**
+     * The serializer.
+     */
+    private static final JsonSerializer serializer = new JsonSerializer();
+
     /**
      * The logger instance.
      */
@@ -145,22 +161,47 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
 
             log.info("Received request: " + originalRequest.getHost() + " " + originalRequest.getMethod() + " " + originalRequest.getPath());
 
-            List<Indicator> indicators = null;
-            try {
-                Type domainType = new TypeToken<List<Indicator>>() {
-                }.getType();
-                indicators = new Gson().fromJson((originalRequest).getBody(), domainType);
-            } catch (com.google.gson.JsonSyntaxException ex) {
-                errorMessages.add(new ErrorMessage(originalRequest.getBody(), Arrays.asList(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("ERROR_INVALID_PAYLOAD"), null))));
+            HealthCommodityFundingRequest healthCommodityFundingRequest = serializer.deserialize((originalRequest).getBody(), HealthCommodityFundingRequest.class);
+
+            String publicKey, privateKey;
+            if (config.getDynamicConfig().isEmpty()) {
+                log.debug("Dynamic config is empty, using config from mediator.properties");
+                publicKey = config.getProperty("source.publicKey");
+                privateKey = config.getProperty("source.privateKey");
+            } else {
+                log.debug("Using dynamic config");
+                JSONObject connectionProperties = new JSONObject(config.getDynamicConfig()).getJSONObject("financeBusProperties");
+                publicKey = connectionProperties.getString("publicKey");
+                privateKey = connectionProperties.getString("privateKey");
             }
 
-            validateData(indicators);
+            boolean verifySignature = RSAUtils.verifyPayload(new Gson().toJson(healthCommodityFundingRequest.getData()), healthCommodityFundingRequest.getSignature(), publicKey);
 
-            if (!errorMessages.isEmpty()) {
-                FinishRequest finishRequest = new FinishRequest(new Gson().toJson(errorMessages), "text/json", HttpStatus.SC_BAD_REQUEST);
-                (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
+            if (verifySignature) {
+                validateData(healthCommodityFundingRequest.getData());
+                if (!errorMessages.isEmpty()) {
+                    JSONObject error = new JSONObject();
+                    error.put("error_message", new JSONArray(new Gson().toJson(errorMessages)));
+
+                    FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(error, privateKey)), "text/json", HttpStatus.SC_BAD_REQUEST);
+                    (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
+                } else {
+                    sendDataToTargetSystem(new Gson().toJson(healthCommodityFundingRequest.getData()));
+
+                    JSONObject error = new JSONObject();
+                    error.put("success", true);
+
+                    FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(error, privateKey)), "text/json", HttpStatus.SC_BAD_REQUEST);
+                    (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
+                }
             } else {
-                sendDataToTargetSystem(originalRequest.getBody());
+                JSONObject error = new JSONObject();
+                error.put("success", false);
+                error.put("error_message", "signature verification failed");
+
+                FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(error, privateKey)), "text/json", HttpStatus.SC_UNAUTHORIZED);
+                (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
+
             }
         } else if (msg instanceof MediatorHTTPResponse) { //respond
             log.info("Received response from target system");
@@ -168,6 +209,14 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
         } else {
             unhandled(msg);
         }
+    }
+
+    private FinanceBusResponse generateFinanceBusResponse(Object response, String privateKey) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
+        String signature = null;
+        if (privateKey != null)
+            signature = RSAUtils.signPayload(response.toString(), privateKey);
+        return new FinanceBusResponse(response.toString(), signature);
+
     }
 
     /**
