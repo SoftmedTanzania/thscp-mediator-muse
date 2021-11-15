@@ -66,7 +66,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>tz.go.moh.him.thscp.mediator.ffars.muse.MediatorMain</mainClass>
+                                    <mainClass>tz.go.moh.him.thscp.mediator.muse.MediatorMain</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>

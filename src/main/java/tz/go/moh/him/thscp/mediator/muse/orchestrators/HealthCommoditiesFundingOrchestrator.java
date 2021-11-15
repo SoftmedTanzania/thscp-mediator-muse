@@ -1,4 +1,4 @@
-package tz.go.moh.him.thscp.mediator.ffars.muse.orchestrators;
+package tz.go.moh.him.thscp.mediator.muse.orchestrators;
 
 import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
@@ -19,7 +19,7 @@ import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
 import org.openhim.mediator.engine.messages.MediatorHTTPResponse;
 import tz.go.moh.him.mediator.core.domain.ErrorMessage;
 import tz.go.moh.him.mediator.core.domain.ResultDetail;
-import tz.go.moh.him.thscp.mediator.ffars.muse.domain.Indicator;
+import tz.go.moh.him.thscp.mediator.muse.domain.Indicator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,16 +106,15 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
     public List<ResultDetail> validateRequiredFields(List<Indicator> indicators) {
         List<ResultDetail> resultDetailsList = new ArrayList<>();
 
-        for (Indicator indicator: indicators
-             ) {
-            if (StringUtils.isBlank(indicator.getUuid()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("UUID_IS_BLANK"), null));
+        for (Indicator indicator : indicators) {
+            if (StringUtils.isBlank(indicator.getFinancialYear()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("FINANCIAL_YEAR_IS_BLANK"), null));
 
-            if (StringUtils.isBlank(indicator.getProductCode()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("PRODUCT_CODE_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getGfsCode()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("GFS_CODE_IS_BLANK"), null));
 
-            if (StringUtils.isBlank(indicator.getProgram()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("PROGRAM_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getGfsDescription()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("GFS_DESCRIPTION_IS_BLANK"), null));
 
             if (StringUtils.isBlank(indicator.getSource()))
                 resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("SOURCE_IS_BLANK"), null));
@@ -123,11 +122,11 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
             if (StringUtils.isBlank(indicator.getFacilityId()))
                 resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("FACILITY_ID_IS_BLANK"), null));
 
-            if (StringUtils.isBlank(indicator.getStartDate()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("START_DATE_ID_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getActivity()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("ACTIVITY_IS_BLANK"), null));
 
-            if (StringUtils.isBlank(indicator.getEndDate()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("END_DATE_ID_IS_BLANK"), null));
+            if (StringUtils.isBlank(indicator.getDate()))
+                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("DATE_IS_BLANK"), null));
         }
 
         return resultDetailsList;
@@ -135,8 +134,8 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
 
     /**
      * Handles receiving OpenHIM Core messages into the mediator
-     * @param msg to be received
      *
+     * @param msg to be received
      * @throws Exception
      */
     @Override
@@ -148,7 +147,8 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
 
             List<Indicator> indicators = null;
             try {
-                Type domainType = new TypeToken<List<Indicator>>() {}.getType();
+                Type domainType = new TypeToken<List<Indicator>>() {
+                }.getType();
                 indicators = new Gson().fromJson((originalRequest).getBody(), domainType);
             } catch (com.google.gson.JsonSyntaxException ex) {
                 errorMessages.add(new ErrorMessage(originalRequest.getBody(), Arrays.asList(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("ERROR_INVALID_PAYLOAD"), null))));

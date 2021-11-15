@@ -1,4 +1,4 @@
-package tz.go.moh.him.thscp.mediator.ffars.muse;
+package tz.go.moh.him.thscp.mediator.muse;
 
 import org.junit.Assert;
 import org.junit.Test;

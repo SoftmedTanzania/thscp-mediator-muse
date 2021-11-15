@@ -1,4 +1,4 @@
-package tz.go.moh.him.thscp.mediator.ffars.muse.orchestrators;
+package tz.go.moh.him.thscp.mediator.muse.orchestrators;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -14,7 +14,7 @@ import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
 import org.openhim.mediator.engine.testing.MockHTTPConnector;
 import org.openhim.mediator.engine.testing.MockLauncher;
 import org.openhim.mediator.engine.testing.TestingUtils;
-import tz.go.moh.him.thscp.mediator.ffars.muse.domain.Indicator;
+import tz.go.moh.him.thscp.mediator.muse.domain.Indicator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -176,7 +176,8 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
 
             Gson gson = new Gson();
 
-            Type domainType = new TypeToken<List<Indicator>>() {}.getType();
+            Type domainType = new TypeToken<List<Indicator>>() {
+            }.getType();
 
             List<Indicator> expected;
 
@@ -189,16 +190,14 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
             }
 
             List<Indicator> actual = gson.fromJson(msg.getBody(), domainType);
-
-            assertEquals(expected.get(0).getUuid(), actual.get(0).getUuid());
-            assertEquals(expected.get(0).getAllocatedFund(), actual.get(0).getAllocatedFund());
-            assertEquals(expected.get(0).getDisbursedFund(), actual.get(0).getDisbursedFund());
-            assertEquals(expected.get(0).getProgram(), actual.get(0).getProgram());
+            assertEquals(expected.get(0).getAllocatedFund(), actual.get(0).getAllocatedFund(), 0.0);
+            assertEquals(expected.get(0).getBudgetedFund(), actual.get(0).getBudgetedFund(), 0.0);
+            assertEquals(expected.get(0).getGfsCode(), actual.get(0).getGfsCode());
             assertEquals(expected.get(0).getFacilityId(), actual.get(0).getFacilityId());
             assertEquals(expected.get(0).getSource(), actual.get(0).getSource());
-            assertEquals(expected.get(0).getProductCode(), actual.get(0).getProductCode());
-            assertEquals(expected.get(0).getStartDate(), actual.get(0).getStartDate());
-            assertEquals(expected.get(0).getEndDate(), actual.get(0).getEndDate());
+            assertEquals(expected.get(0).getFinancialYear(), actual.get(0).getFinancialYear());
+            assertEquals(expected.get(0).getActivity(), actual.get(0).getActivity());
+            assertEquals(expected.get(0).getDate(), actual.get(0).getDate());
         }
     }
 }

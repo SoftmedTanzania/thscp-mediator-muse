@@ -1,4 +1,4 @@
-package tz.go.moh.him.thscp.mediator.ffars.muse;
+package tz.go.moh.him.thscp.mediator.muse;
 
 import akka.actor.ActorSystem;
 import akka.event.Logging;
@@ -6,7 +6,7 @@ import akka.event.LoggingAdapter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openhim.mediator.engine.*;
-import tz.go.moh.him.thscp.mediator.ffars.muse.orchestrators.HealthCommoditiesFundingOrchestrator;
+import tz.go.moh.him.thscp.mediator.muse.orchestrators.HealthCommoditiesFundingOrchestrator;
 
 import java.io.File;
 import java.io.IOException;
