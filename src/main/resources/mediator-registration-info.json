@@ -95,7 +95,7 @@
           "param": "publicKey",
           "displayName": "Finance Bus Public Keys",
           "description": "Public keys for the finance bus",
-          "type": "String"
+          "type": "string"
         },
         {
           "param": "privateKey",
