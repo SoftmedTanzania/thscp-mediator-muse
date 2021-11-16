@@ -87,7 +87,7 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
             PrivateKey privateKey = pair.getPrivate();
             PublicKey publicKeyExpected = pair.getPublic();
 
-            addDynamicConfigs(configuration, Base64.getEncoder().encodeToString(publicKeyExpected.getEncoded()),Base64.getEncoder().encodeToString(privateKey.getEncoded()));
+            addDynamicConfigs(configuration, Base64.getEncoder().encodeToString(publicKeyExpected.getEncoded()), Base64.getEncoder().encodeToString(privateKey.getEncoded()));
 
             String payload = IOUtils.toString(stream);
 

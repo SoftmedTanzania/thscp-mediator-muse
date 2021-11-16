@@ -1,6 +1,5 @@
 package tz.go.moh.him.thscp.mediator.muse.domain;
 
-import com.google.gson.Gson;
 import org.junit.Test;
 import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
 
@@ -15,9 +14,9 @@ public class DataValidationResponseTest {
      */
     @Test
     public void testDataValidationResponseSerialization() throws Exception {
-        List<DataValidationResponse.DataValidationResultDetail> dataValidationResultDetails =  new ArrayList<>();
+        List<DataValidationResponse.DataValidationResultDetail> dataValidationResultDetails = new ArrayList<>();
 
-        DataValidationResponse.DataValidationResultDetail dataValidationResultDetail = new DataValidationResponse.DataValidationResultDetail("sample_uuid","uuid is blank");
+        DataValidationResponse.DataValidationResultDetail dataValidationResultDetail = new DataValidationResponse.DataValidationResultDetail("sample_uuid", "uuid is blank");
         dataValidationResultDetails.add(dataValidationResultDetail);
 
 
