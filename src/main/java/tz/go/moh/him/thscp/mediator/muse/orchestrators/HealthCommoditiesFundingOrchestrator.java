@@ -151,7 +151,9 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
      */
     @Override
     public void onReceive(Object msg) throws Exception {
-        String publicKey, privateKey;
+        String publicKey;
+        String privateKey;
+
         if (config.getDynamicConfig().isEmpty()) {
             log.debug("Dynamic config is empty, using config from mediator.properties");
             publicKey = config.getProperty("source.publicKey");

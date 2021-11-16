@@ -51,6 +51,10 @@ public class Indicator {
         return uuid;
     }
 
+    public String getGfsDescription() {
+        return gfsDescription;
+    }
+
     public double getAllocatedFund() {
         return allocatedFund;
     }
