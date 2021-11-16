@@ -1,11 +1,11 @@
-# FFARS and MUSE to Tanzania Health Supply Chain Mediator
+# MUSE to Tanzania Health Supply Chain Mediator
 
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/83dcc6b5f72c48b4aa182849a77d5307)](https://app.codacy.com/gh/SoftmedTanzania/thscp-mediator-ffars-muse?utm_source=github.com&utm_medium=referral&utm_content=SoftmedTanzania/thscp-mediator-ffars-muse&utm_campaign=Badge_Grade_Settings)
 [![Java CI Badge](https://github.com/SoftmedTanzania/thscp-mediator-ffars-muse/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/SoftmedTanzania/thscp-mediator-ffars-muse/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 [![Coverage Status](https://coveralls.io/repos/github/SoftmedTanzania/thscp-mediator-ffars-muse/badge.svg?branch=development)](https://coveralls.io/github/SoftmedTanzania/thscp-mediator-ffars-muse?branch=development)
 
-An [OpenHIM](http://openhim.org/) mediator for handling system integration between FFARS and MUSE and Tanzania Health Supply Chain Mediator.
+An [OpenHIM](http://openhim.org/) mediator for handling system integration between MUSE and Tanzania Health Supply Chain via the Ministry of Finance's Finance Bus.
 
 ## 1. Dev Requirements
 
@@ -25,7 +25,7 @@ The configuration parameters specific to the mediator and destination system can
 
 ```
     # Mediator Properties
-    mediator.name=THSCP-Mediator-FFARS-and-MUSE
+    mediator.name=THSCP-Mediator-MUSE
     mediator.host=localhost
     mediator.port=3020
     mediator.timeout=60000
@@ -50,8 +50,8 @@ The configuration parameters specific to the mediator and the mediator's metadat
     {
       "urn": "urn:uuid:ee883220-7b2d-11eb-851e-610d06e9c9de",
       "version": "0.1.0",
-      "name": "THSCP-Mediator-FFARS and MUSE",
-      "description": "A mediator for handling system integrations between FFARS and MUSE with THSCP",
+      "name": "THSCP-Mediator-MUSE",
+      "description": "A mediator for handling system integrations between MUSE with THSCP",
       "endpoints": [
         {
           "name": "THSCP-Mediator-FFARS and MUSE Route",
@@ -101,7 +101,7 @@ The configuration parameters specific to the mediator and the mediator's metadat
             {
               "param": "destinationPath",
               "displayName": "Destination Path",
-              "description": "The destination path for receiving data from the HIM. eg /hdr",
+              "description": "The destination path for receiving responseData from the HIM. eg /hdr",
               "type": "string"
             },
             {
@@ -117,13 +117,13 @@ The configuration parameters specific to the mediator and the mediator's metadat
             {
               "param": "destinationUsername",
               "displayName": "Destination Username",
-              "description": "The destination username for receiving data from the HIM.",
+              "description": "The destination username for receiving responseData from the HIM.",
               "type": "string"
             },
             {
               "param": "destinationPassword",
               "displayName": "Destination Password",
-              "description": "The destination password for receiving data from the HIM.",
+              "description": "The destination password for receiving responseData from the HIM.",
               "type": "password"
             }
           ]

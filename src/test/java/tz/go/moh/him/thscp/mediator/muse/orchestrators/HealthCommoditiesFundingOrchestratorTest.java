@@ -182,7 +182,24 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
          */
         @Override
         public String getResponse() {
-            return null;
+            return "{\n" +
+                    "   \"code\": 200,\n" +
+                    "   \"success\": true,\n" +
+                    "   \"message\": \"success\",\n" +
+                    "   \"data\": {\n" +
+                    "       \"created\": 1,\n" +
+                    "       \"updated\": 0,\n" +
+                    "       \"error\": 0,\n" +
+                    "       \"response\": [\n" +
+                    "           {\n" +
+                    "               \"message\": \"Created\",\n" +
+                    "               \"uuid\": \"3d378375-6a0c-4974-b737-4160c293774d\",\n" +
+                    "               \"code\": 1,\n" +
+                    "               \"errors\": null\n" +
+                    "           }\n" +
+                    "       ]\n" +
+                    "   }\n" +
+                    "}\n";
         }
 
         /**

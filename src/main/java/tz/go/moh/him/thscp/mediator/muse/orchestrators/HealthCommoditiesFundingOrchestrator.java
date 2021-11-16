@@ -11,15 +11,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.codehaus.plexus.util.StringUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.messages.FinishRequest;
 import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
 import org.openhim.mediator.engine.messages.MediatorHTTPResponse;
-import tz.go.moh.him.mediator.core.domain.ErrorMessage;
-import tz.go.moh.him.mediator.core.domain.ResultDetail;
 import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
+import tz.go.moh.him.thscp.mediator.muse.domain.DataValidationResponse;
 import tz.go.moh.him.thscp.mediator.muse.domain.FinanceBusResponse;
 import tz.go.moh.him.thscp.mediator.muse.domain.HealthCommodityFundingRequest;
 import tz.go.moh.him.thscp.mediator.muse.domain.Indicator;
@@ -68,9 +66,9 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
     protected JSONObject errorMessageResource;
 
     /**
-     * Represents a list of error messages, if any,that have been caught during payload data validation to be returned to the source system as response.
+     * Represents data validation error messages, if any,that have been caught during payload data validation to be returned to the source system as response.
      */
-    protected List<ErrorMessage> errorMessages = new ArrayList<>();
+    protected DataValidationResponse dataValidationResponse = null;
 
     /**
      * Initializes a new instance of the {@link HealthCommoditiesFundingOrchestrator} class.
@@ -96,20 +94,17 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
      * @param indicators The object to be validated
      */
     protected void validateData(List<Indicator> indicators) {
-        List<ResultDetail> resultDetailsList = new ArrayList<>();
+        List<DataValidationResponse.DataValidationResultDetail> resultDetailsList = new ArrayList<>();
 
         if (indicators == null) {
-            resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("ERROR_INVALID_PAYLOAD"), null));
+            resultDetailsList.add(new DataValidationResponse.DataValidationResultDetail("", errorMessageResource.getString("ERROR_INVALID_PAYLOAD")));
         } else {
             resultDetailsList.addAll(validateRequiredFields(indicators));
         }
 
         if (resultDetailsList.size() != 0) {
             // Adding the validation results to the Error message object
-            ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.setSource(new Gson().toJson(indicators));
-            errorMessage.setResultsDetails(resultDetailsList);
-            errorMessages.add(errorMessage);
+            dataValidationResponse = new DataValidationResponse(resultDetailsList);
         }
     }
 
@@ -119,30 +114,30 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
      * @param indicators to be validated
      * @return array list of validation results details for failed validations
      */
-    public List<ResultDetail> validateRequiredFields(List<Indicator> indicators) {
-        List<ResultDetail> resultDetailsList = new ArrayList<>();
+    public List<DataValidationResponse.DataValidationResultDetail> validateRequiredFields(List<Indicator> indicators) {
+        List<DataValidationResponse.DataValidationResultDetail> resultDetailsList = new ArrayList<>();
 
         for (Indicator indicator : indicators) {
             if (StringUtils.isBlank(indicator.getFinancialYear()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("FINANCIAL_YEAR_IS_BLANK"), null));
+                resultDetailsList.add(new DataValidationResponse.DataValidationResultDetail(indicator.getUuid(), errorMessageResource.getString("FINANCIAL_YEAR_IS_BLANK")));
 
             if (StringUtils.isBlank(indicator.getGfsCode()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("GFS_CODE_IS_BLANK"), null));
+                resultDetailsList.add(new DataValidationResponse.DataValidationResultDetail(indicator.getUuid(), errorMessageResource.getString("GFS_CODE_IS_BLANK")));
 
-            if (StringUtils.isBlank(indicator.getGfsDescription()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("GFS_DESCRIPTION_IS_BLANK"), null));
+//            if (StringUtils.isBlank(indicator.getGfsDescription()))
+//                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("GFS_DESCRIPTION_IS_BLANK"), null));
 
             if (StringUtils.isBlank(indicator.getSource()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("SOURCE_IS_BLANK"), null));
+                resultDetailsList.add(new DataValidationResponse.DataValidationResultDetail(indicator.getUuid(), errorMessageResource.getString("SOURCE_IS_BLANK")));
 
             if (StringUtils.isBlank(indicator.getFacilityId()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("FACILITY_ID_IS_BLANK"), null));
+                resultDetailsList.add(new DataValidationResponse.DataValidationResultDetail(indicator.getUuid(), errorMessageResource.getString("FACILITY_ID_IS_BLANK")));
 
             if (StringUtils.isBlank(indicator.getActivity()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("ACTIVITY_IS_BLANK"), null));
+                resultDetailsList.add(new DataValidationResponse.DataValidationResultDetail(indicator.getUuid(), errorMessageResource.getString("ACTIVITY_IS_BLANK")));
 
             if (StringUtils.isBlank(indicator.getDate()))
-                resultDetailsList.add(new ResultDetail(ResultDetail.ResultsDetailsType.ERROR, errorMessageResource.getString("DATE_IS_BLANK"), null));
+                resultDetailsList.add(new DataValidationResponse.DataValidationResultDetail(indicator.getUuid(), errorMessageResource.getString("DATE_IS_BLANK")));
         }
 
         return resultDetailsList;
@@ -156,6 +151,18 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
      */
     @Override
     public void onReceive(Object msg) throws Exception {
+        String publicKey, privateKey;
+        if (config.getDynamicConfig().isEmpty()) {
+            log.debug("Dynamic config is empty, using config from mediator.properties");
+            publicKey = config.getProperty("source.publicKey");
+            privateKey = config.getProperty("privateKey");
+        } else {
+            log.debug("Using dynamic config");
+            JSONObject connectionProperties = new JSONObject(config.getDynamicConfig()).getJSONObject("financeBusProperties");
+            publicKey = connectionProperties.getString("publicKey");
+            privateKey = connectionProperties.getString("privateKey");
+        }
+
         if (msg instanceof MediatorHTTPRequest) {
             originalRequest = (MediatorHTTPRequest) msg;
 
@@ -163,59 +170,48 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
 
             HealthCommodityFundingRequest healthCommodityFundingRequest = serializer.deserialize((originalRequest).getBody(), HealthCommodityFundingRequest.class);
 
-            String publicKey, privateKey;
-            if (config.getDynamicConfig().isEmpty()) {
-                log.debug("Dynamic config is empty, using config from mediator.properties");
-                publicKey = config.getProperty("source.publicKey");
-                privateKey = config.getProperty("privateKey");
-            } else {
-                log.debug("Using dynamic config");
-                JSONObject connectionProperties = new JSONObject(config.getDynamicConfig()).getJSONObject("financeBusProperties");
-                publicKey = connectionProperties.getString("publicKey");
-                privateKey = connectionProperties.getString("privateKey");
-            }
-
             boolean verifySignature = RSAUtils.verifyPayload(new Gson().toJson(healthCommodityFundingRequest.getData()), healthCommodityFundingRequest.getSignature(), publicKey);
 
             if (verifySignature) {
                 validateData(healthCommodityFundingRequest.getData());
-                if (!errorMessages.isEmpty()) {
-                    JSONObject error = new JSONObject();
-                    error.put("error_message", new JSONArray(new Gson().toJson(errorMessages)));
+                if (dataValidationResponse != null) {
+                    FinanceBusResponse.ResponseData responseData = new FinanceBusResponse.ResponseData();
+                    responseData.setSuccess(false);
+                    responseData.setCode(HttpStatus.SC_BAD_REQUEST);
+                    responseData.setMessage("Data validations failed");
+                    responseData.setData(dataValidationResponse);
 
-                    FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(error, privateKey)), "text/json", HttpStatus.SC_BAD_REQUEST);
+                    FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey)), "text/json", HttpStatus.SC_BAD_REQUEST);
                     (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
                 } else {
                     sendDataToTargetSystem(new Gson().toJson(healthCommodityFundingRequest.getData()));
-
-                    JSONObject error = new JSONObject();
-                    error.put("success", true);
-
-                    FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(error, privateKey)), "text/json", HttpStatus.SC_BAD_REQUEST);
-                    (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
                 }
             } else {
-                JSONObject error = new JSONObject();
-                error.put("success", false);
-                error.put("error_message", "signature verification failed");
+                FinanceBusResponse.ResponseData responseData = new FinanceBusResponse.ResponseData();
+                responseData.setSuccess(false);
+                responseData.setCode(HttpStatus.SC_UNAUTHORIZED);
+                responseData.setMessage("signature verification failed");
 
-                FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(error, privateKey)), "text/json", HttpStatus.SC_UNAUTHORIZED);
+                FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey)), "text/json", HttpStatus.SC_UNAUTHORIZED);
                 (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
 
             }
         } else if (msg instanceof MediatorHTTPResponse) { //respond
             log.info("Received response from target system");
-            (originalRequest).getRequestHandler().tell(((MediatorHTTPResponse) msg).toFinishRequest(), getSelf());
+            FinanceBusResponse.ResponseData responseData = serializer.deserialize(((MediatorHTTPResponse) msg).getBody(), FinanceBusResponse.ResponseData.class);
+
+            FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey)), "text/json", ((MediatorHTTPResponse) msg).getStatusCode());
+            (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
         } else {
             unhandled(msg);
         }
     }
 
-    private FinanceBusResponse generateFinanceBusResponse(Object response, String privateKey) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
+    private FinanceBusResponse generateFinanceBusResponse(FinanceBusResponse.ResponseData responseData, String privateKey) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
         String signature = null;
         if (privateKey != null)
-            signature = RSAUtils.signPayload(response.toString(), privateKey);
-        return new FinanceBusResponse(response.toString(), signature);
+            signature = RSAUtils.signPayload(serializer.serializeToString(responseData), privateKey);
+        return new FinanceBusResponse(responseData, signature);
 
     }
 

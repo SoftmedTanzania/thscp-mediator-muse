@@ -7,6 +7,10 @@ import com.google.gson.annotations.SerializedName;
  * Represents the Health Commodities Funding Indicator.
  */
 public class Indicator {
+    @SerializedName("uuid")
+    @JsonProperty("uuid")
+    private String uuid;
+
     @SerializedName("allocatedFund")
     @JsonProperty("allocatedFund")
     private double allocatedFund;
@@ -43,6 +47,10 @@ public class Indicator {
     @JsonProperty("date")
     private String date;
 
+    public String getUuid() {
+        return uuid;
+    }
+
     public double getAllocatedFund() {
         return allocatedFund;
     }
@@ -73,10 +81,6 @@ public class Indicator {
 
     public void setGfsCode(String gfsCode) {
         this.gfsCode = gfsCode;
-    }
-
-    public String getGfsDescription() {
-        return gfsDescription;
     }
 
     public void setGfsDescription(String gfsDescription) {

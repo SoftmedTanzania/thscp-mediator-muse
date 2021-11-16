@@ -9,7 +9,8 @@
       "gfsDescription": "Medical Supplies",
       "activity": "D01S02",
       "source": "0GT",
-      "date": "2021-10-09"
+      "date": "2021-10-09",
+      "uuid": "uuid"
     }
   ],
   "signature": "signature"
