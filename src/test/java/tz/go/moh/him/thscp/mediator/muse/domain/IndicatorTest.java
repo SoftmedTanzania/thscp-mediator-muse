@@ -1,4 +1,4 @@
-package tz.go.moh.him.thscp.mediator.ffars.muse.domain;
+package tz.go.moh.him.thscp.mediator.muse.domain;
 
 import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
@@ -21,25 +21,23 @@ public class IndicatorTest {
     public void testIndicatorSerialization() throws Exception {
         Indicator indicator = new Indicator();
 
-        indicator.setUuid("3d378375-6a0c-4974-b737-4160c293774d");
         indicator.setAllocatedFund(200000);
-        indicator.setDisbursedFund(100000);
-        indicator.setFacilityId("123456");
-        indicator.setProductCode("10020035MD");
-        indicator.setProgram("COVID-19");
+        indicator.setBudgetedFund(100000);
+        indicator.setFacilityId("0T100000");
+        indicator.setFinancialYear("2020/2021");
+        indicator.setGfsCode("22010253");
         indicator.setSource("GOT");
-        indicator.setStartDate("2020-12-03");
-        indicator.setEndDate("2020-12-03");
+        indicator.setActivity("D01S02");
+        indicator.setDate("2020-12-03");
 
         Gson gson = new Gson();
         String actual = gson.toJson(indicator, Indicator.class);
 
-        assertTrue(actual.contains(indicator.getUuid()));
         assertTrue(actual.contains(indicator.getFacilityId()));
-        assertTrue(actual.contains(indicator.getProductCode()));
-        assertTrue(actual.contains(indicator.getProgram()));
+        assertTrue(actual.contains(indicator.getFinancialYear()));
+        assertTrue(actual.contains(indicator.getGfsCode()));
         assertTrue(actual.contains(indicator.getSource()));
-        assertTrue(actual.contains(indicator.getStartDate()));
+        assertTrue(actual.contains(indicator.getActivity()));
     }
 
     /**
@@ -52,12 +50,11 @@ public class IndicatorTest {
 
         Indicator indicator = new Gson().fromJson(IOUtils.toString(stream), Indicator.class);
 
-        assertEquals("3d378375-6a0c-4974-b737-4160c293774d", indicator.getUuid());
-        assertEquals("123456", indicator.getFacilityId());
-        assertEquals("10020035MD", indicator.getProductCode());
-        assertEquals("COVID-19", indicator.getProgram());
-        assertEquals("GOT", indicator.getSource());
-        assertEquals("2020-12-03", indicator.getStartDate());
-        assertEquals("2020-12-03", indicator.getEndDate());
+        assertEquals("0T100000", indicator.getFacilityId());
+        assertEquals("2020/2021", indicator.getFinancialYear());
+        assertEquals("22010253", indicator.getGfsCode());
+        assertEquals("0GT", indicator.getSource());
+        assertEquals("D01S02", indicator.getActivity());
+        assertEquals("2021-10-09", indicator.getDate());
     }
 }

@@ -1,4 +1,4 @@
-package tz.go.moh.him.thscp.mediator.ffars.muse.orchestrators;
+package tz.go.moh.him.thscp.mediator.muse.orchestrators;
 
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;

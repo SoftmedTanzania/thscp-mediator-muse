@@ -1,8 +1,8 @@
 {
   "urn": "urn:uuid:ee883220-7b2d-11eb-851e-610d06e9c9de",
   "version": "0.1.0",
-  "name": "FFARS & MUSE - THSCP Mediator",
-  "description": "An OpenHIM mediator for handling integration of data from FFARS & MUSE to THSCP systems.",
+  "name": "MUSE - THSCP Mediator",
+  "description": "An OpenHIM mediator for handling integration of data from MUSE to THSCP systems.",
   "endpoints": [
     {
       "name": "THSCP Health Commodities Funding Route",
@@ -14,11 +14,13 @@
   ],
   "defaultChannelConfig": [
     {
-      "name": "FFARS & MUSE - THSCP Health Commodities Funding Channel",
-      "urlPattern": "^/ffars-muse-thscp-health-commodities-funding$",
-      "description": "An OpenHIM channel for handling sharing of Health Commodities data from FFARS & MUSE to THSCP.",
+      "name": "MUSE - THSCP Health Commodities Funding Channel",
+      "urlPattern": "^/muse-thscp-health-commodities-funding$",
+      "description": "An OpenHIM channel for handling sharing of Health Commodities data from MUSE to THSCP.",
       "type": "http",
-      "allow": ["muse-role", "ffars-role"],
+      "allow": [
+        "muse-role"
+      ],
       "methods": [
         "POST"
       ],
@@ -79,6 +81,26 @@
           "param": "destinationPassword",
           "displayName": "Destination Password",
           "description": "The destination password for receiving data from the HIM.",
+          "type": "password"
+        }
+      ]
+    },
+    {
+      "param": "financeBusProperties",
+      "displayName": "Finance Bus Connection Properties",
+      "description": "Configuration to set the public and private keys for the communication with the Finance Bus",
+      "type": "struct",
+      "template": [
+        {
+          "param": "publicKey",
+          "displayName": "Finance Bus Public Keys",
+          "description": "Public keys for the finance bus",
+          "type": "String"
+        },
+        {
+          "param": "privateKey",
+          "displayName": "Tanzania HIM private keys",
+          "description": "The private keys of the tanzania HIM used for signing responses back to the Finance Bus",
           "type": "password"
         }
       ]
