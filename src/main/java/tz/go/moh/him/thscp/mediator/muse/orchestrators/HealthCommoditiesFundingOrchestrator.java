@@ -153,16 +153,33 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
     public void onReceive(Object msg) throws Exception {
         String publicKey;
         String privateKey;
+        String publicKeyAlias;
+        String publicKeyPassword;
+        String privateKeyAlias;
+        String privateKeyPassword;
 
         if (config.getDynamicConfig().isEmpty()) {
             log.debug("Dynamic config is empty, using config from mediator.properties");
             publicKey = config.getProperty("source.publicKey");
+            publicKeyAlias = config.getProperty("source.publicKeyAlias");
+            publicKeyPassword = config.getProperty("source.publicKeyPassword");
+
             privateKey = config.getProperty("privateKey");
+            privateKeyAlias = config.getProperty("privateKeyAlias");
+            privateKeyPassword = config.getProperty("privateKeyPassword");
         } else {
             log.debug("Using dynamic config");
             JSONObject connectionProperties = new JSONObject(config.getDynamicConfig()).getJSONObject("financeBusProperties");
-            publicKey = connectionProperties.getString("publicKey");
-            privateKey = connectionProperties.getString("privateKey");
+
+            JSONObject financeBusPublicKeyProperties = connectionProperties.getJSONObject("financeBusPublicKeyProperties");
+            publicKey = financeBusPublicKeyProperties.getString("publicKey");
+            publicKeyAlias = financeBusPublicKeyProperties.getString("publicKeyAlias");
+            publicKeyPassword = financeBusPublicKeyProperties.getString("publicKeyPassword");
+
+            JSONObject tanzaniaHimPrivateKeyProperties = connectionProperties.getJSONObject("tanzaniaHimPrivateKeyProperties");
+            privateKey = tanzaniaHimPrivateKeyProperties.getString("privateKey");
+            privateKeyAlias = tanzaniaHimPrivateKeyProperties.getString("privateKeyAlias");
+            privateKeyPassword = tanzaniaHimPrivateKeyProperties.getString("privateKeyPassword");
         }
 
         if (msg instanceof MediatorHTTPRequest) {
@@ -170,49 +187,65 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
 
             log.info("Received request: " + originalRequest.getHost() + " " + originalRequest.getMethod() + " " + originalRequest.getPath());
 
-            HealthCommodityFundingRequest healthCommodityFundingRequest = serializer.deserialize((originalRequest).getBody(), HealthCommodityFundingRequest.class);
+            HealthCommodityFundingRequest healthCommodityFundingRequest;
+            try {
+                healthCommodityFundingRequest = serializer.deserialize((originalRequest).getBody(), HealthCommodityFundingRequest.class);
+                boolean verifySignature = RSAUtils.verifyPayload(new Gson().toJson(healthCommodityFundingRequest.getData()), healthCommodityFundingRequest.getSignature(), publicKey, publicKeyAlias, publicKeyPassword);
+                if (verifySignature) {
+                    validateData(healthCommodityFundingRequest.getData());
+                    if (dataValidationResponse != null) {
+                        FinanceBusResponse.ResponseData responseData = new FinanceBusResponse.ResponseData();
+                        responseData.setSuccess(false);
+                        responseData.setCode(HttpStatus.SC_BAD_REQUEST);
+                        responseData.setMessage("Data validations failed");
+                        responseData.setData(dataValidationResponse);
 
-            boolean verifySignature = RSAUtils.verifyPayload(new Gson().toJson(healthCommodityFundingRequest.getData()), healthCommodityFundingRequest.getSignature(), publicKey);
-
-            if (verifySignature) {
-                validateData(healthCommodityFundingRequest.getData());
-                if (dataValidationResponse != null) {
+                        FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey, privateKeyAlias, privateKeyPassword)), "text/json", HttpStatus.SC_BAD_REQUEST);
+                        (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
+                    } else {
+                        sendDataToTargetSystem(new Gson().toJson(healthCommodityFundingRequest.getData()));
+                    }
+                } else {
                     FinanceBusResponse.ResponseData responseData = new FinanceBusResponse.ResponseData();
                     responseData.setSuccess(false);
-                    responseData.setCode(HttpStatus.SC_BAD_REQUEST);
-                    responseData.setMessage("Data validations failed");
-                    responseData.setData(dataValidationResponse);
+                    responseData.setCode(HttpStatus.SC_UNAUTHORIZED);
+                    responseData.setMessage("signature verification failed");
 
-                    FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey)), "text/json", HttpStatus.SC_BAD_REQUEST);
+                    FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey, privateKeyAlias, privateKeyPassword)), "text/json", HttpStatus.SC_UNAUTHORIZED);
                     (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
-                } else {
-                    sendDataToTargetSystem(new Gson().toJson(healthCommodityFundingRequest.getData()));
+
                 }
-            } else {
+            } catch (Exception e) {
+                log.error(e.toString());
+
                 FinanceBusResponse.ResponseData responseData = new FinanceBusResponse.ResponseData();
                 responseData.setSuccess(false);
-                responseData.setCode(HttpStatus.SC_UNAUTHORIZED);
-                responseData.setMessage("signature verification failed");
+                responseData.setCode(HttpStatus.SC_BAD_REQUEST);
+                responseData.setMessage("Bad Request");
 
-                FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey)), "text/json", HttpStatus.SC_UNAUTHORIZED);
+                FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey, privateKeyAlias, privateKeyPassword)), "text/json", HttpStatus.SC_BAD_REQUEST);
                 (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
-
             }
         } else if (msg instanceof MediatorHTTPResponse) { //respond
             log.info("Received response from target system");
             FinanceBusResponse.ResponseData responseData = serializer.deserialize(((MediatorHTTPResponse) msg).getBody(), FinanceBusResponse.ResponseData.class);
 
-            FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey)), "text/json", ((MediatorHTTPResponse) msg).getStatusCode());
+            FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey, privateKeyAlias, privateKeyPassword)), "text/json", ((MediatorHTTPResponse) msg).getStatusCode());
             (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
         } else {
             unhandled(msg);
         }
     }
 
-    private FinanceBusResponse generateFinanceBusResponse(FinanceBusResponse.ResponseData responseData, String privateKey) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
+    private FinanceBusResponse generateFinanceBusResponse(FinanceBusResponse.ResponseData responseData, String privateKey, String privateKeyAlias, String privateKeyPassword) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
         String signature = null;
-        if (privateKey != null)
-            signature = RSAUtils.signPayload(serializer.serializeToString(responseData), privateKey);
+        if (privateKey != null) {
+            try {
+                signature = RSAUtils.signPayload(privateKey, serializer.serializeToString(responseData), privateKeyAlias, privateKeyPassword);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return new FinanceBusResponse(responseData, signature);
 
     }
