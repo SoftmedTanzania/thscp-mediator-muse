@@ -88,20 +88,60 @@
     {
       "param": "financeBusProperties",
       "displayName": "Finance Bus Connection Properties",
-      "description": "Configuration to set the public and private keys for the communication with the Finance Bus",
+      "description": "Configuration to set the public keys and Tanzania HIM private keys for the communication with the Finance Bus",
       "type": "struct",
       "template": [
         {
-          "param": "publicKey",
-          "displayName": "Finance Bus Public Keys",
-          "description": "Public keys for the finance bus",
-          "type": "string"
+          "param": "financeBusPublicKeyProperties",
+          "displayName": "Finance Bus Connection Public Keys Properties",
+          "description": "Configuration to set the Finance Bus Public Keys .pfx files, alias and publicKeyPassword",
+          "type": "struct",
+          "template": [
+            {
+              "param": "publicKey",
+              "displayName": "Finance Bus Public Key",
+              "description": "Base 64 encoding of the Public keys for the finance bus in .pfx file",
+              "type": "password"
+            },
+            {
+              "param": "publicKeyAlias",
+              "displayName": "Finance Bus Public Key Alias",
+              "description": "The public keys keystore alias",
+              "type": "password"
+            },
+            {
+              "param": "publicKeyPassword",
+              "displayName": "Finance Bus Public Key Keystore Password",
+              "description": "The public keys keystore password",
+              "type": "password"
+            }
+          ]
         },
         {
-          "param": "privateKey",
-          "displayName": "Tanzania HIM private keys",
-          "description": "The private keys of the tanzania HIM used for signing responses back to the Finance Bus",
-          "type": "password"
+          "param": "tanzaniaHimPrivateKeyProperties",
+          "displayName": "Tanzania HIM Connection Private Keys Properties",
+          "description": "Configuration to set the Tanzania HIM Private Keys .pfx files, alias and privateKeyPassword",
+          "type": "struct",
+          "template": [
+            {
+              "param": "privateKey",
+              "displayName": "Tanzania HIM Private Key",
+              "description": "Base 64 encoding of the Public keys for the finance bus in .pfx file",
+              "type": "password"
+            },
+            {
+              "param": "privateKeyAlias",
+              "displayName": "Tanzania HIM Private Key Alias",
+              "description": "The private keys keystore alias",
+              "type": "password"
+            },
+            {
+              "param": "privateKeyPassword",
+              "displayName": "Tanzania HIM Private Key Keystore Password",
+              "description": "The private keys keystore password",
+              "type": "password"
+            }
+          ]
         }
       ]
     }
