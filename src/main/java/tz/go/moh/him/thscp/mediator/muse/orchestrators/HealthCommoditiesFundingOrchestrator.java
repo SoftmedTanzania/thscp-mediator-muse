@@ -189,7 +189,8 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
             HealthCommodityFundingRequest healthCommodityFundingRequest;
             try {
                 healthCommodityFundingRequest = serializer.deserialize((originalRequest).getBody(), HealthCommodityFundingRequest.class);
-                boolean verifySignature = RSAUtils.verifyPayload(new Gson().toJson(healthCommodityFundingRequest.getData()), healthCommodityFundingRequest.getSignature(), publicKey, publicKeyAlias, publicKeyPassword);
+                JSONObject payload = new JSONObject(((MediatorHTTPRequest) msg).getBody());
+                boolean verifySignature = RSAUtils.verifyPayload(payload.getJSONArray("data").toString(), healthCommodityFundingRequest.getSignature(), publicKey, publicKeyAlias, publicKeyPassword);
                 if (verifySignature) {
                     validateData(healthCommodityFundingRequest.getData());
                     if (dataValidationResponse != null) {
