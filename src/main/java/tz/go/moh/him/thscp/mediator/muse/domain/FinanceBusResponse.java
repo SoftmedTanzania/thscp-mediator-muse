@@ -1,20 +1,20 @@
 package tz.go.moh.him.thscp.mediator.muse.domain;
 
 public class FinanceBusResponse {
-    private  ResponseData responseData;
+    private  ResponseData data;
     private  String signature;
 
     public FinanceBusResponse(ResponseData responseData, String signature) {
-        this.responseData = responseData;
+        this.data = responseData;
         this.signature = signature;
     }
 
-    public ResponseData getResponseData() {
-        return responseData;
+    public ResponseData getData() {
+        return data;
     }
 
-    public void setResponseData(ResponseData responseData) {
-        this.responseData = responseData;
+    public void setData(ResponseData data) {
+        this.data = data;
     }
 
     public String getSignature() {
