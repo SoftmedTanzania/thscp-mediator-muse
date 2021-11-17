@@ -93,11 +93,10 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
 
             addDynamicConfigs(configuration, base64PublicKey, base64PrivateKey, "test2021", "test");
 
-            String payload = IOUtils.toString(stream);
+            JSONObject payload = new JSONObject(IOUtils.toString(stream));
 
-            HealthCommodityFundingRequest healthCommodityFundingRequest = new Gson().fromJson(payload, HealthCommodityFundingRequest.class);
-            String signature = RSAUtils.signPayload(base64PrivateKey, new Gson().toJson(healthCommodityFundingRequest.getData()), "test", "test2021");
-            healthCommodityFundingRequest.setSignature(signature);
+            String signature = RSAUtils.signPayload(base64PrivateKey, payload.getJSONArray("data").toString(), "test", "test2021");
+            payload.put("signature", signature);
 
             MediatorHTTPRequest request = new MediatorHTTPRequest(
                     getRef(),
@@ -108,7 +107,7 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
                     null,
                     null,
                     configuration.getProperty("destination.api.path"),
-                    new Gson().toJson(healthCommodityFundingRequest),
+                    payload.toString(),
                     Collections.singletonMap("Content-Type", "application/json"),
                     Collections.emptyList()
             );
