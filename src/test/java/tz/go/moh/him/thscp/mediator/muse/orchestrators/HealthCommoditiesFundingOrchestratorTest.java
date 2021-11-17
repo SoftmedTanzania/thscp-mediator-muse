@@ -39,7 +39,6 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
      * @param mediatorConfig The mediator config.
      */
     public static void addDynamicConfigs(MediatorConfig mediatorConfig, String publicKey, String privateKey, String keystorePassword, String alias) {
-        JSONObject properties = new JSONObject();
         JSONObject publicKeyProperties = new JSONObject();
         publicKeyProperties.put("publicKey", publicKey);
         publicKeyProperties.put("publicKeyAlias", alias);
@@ -51,10 +50,8 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
         privateKeyProperties.put("privateKeyAlias", alias);
         privateKeyProperties.put("privateKeyPassword", keystorePassword);
 
-        properties.put("financeBusPublicKeyProperties", publicKeyProperties);
-        properties.put("tanzaniaHimPrivateKeyProperties", privateKeyProperties);
-
-        mediatorConfig.getDynamicConfig().put("financeBusProperties", properties);
+        mediatorConfig.getDynamicConfig().put("financeBusPublicKeyProperties", publicKeyProperties);
+        mediatorConfig.getDynamicConfig().put("tanzaniaHimPrivateKeyProperties", privateKeyProperties);
         mediatorConfig.getDynamicConfig().put("destinationConnectionProperties", new JSONObject("{\n" +
                 "    \"destinationHost\": \"localhost\",\n" +
                 "    \"destinationPort\": \"3000\",\n" +
