@@ -169,14 +169,13 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
             privateKeyPassword = config.getProperty("privateKeyPassword");
         } else {
             log.debug("Using dynamic config");
-            JSONObject connectionProperties = new JSONObject(config.getDynamicConfig()).getJSONObject("financeBusProperties");
 
-            JSONObject financeBusPublicKeyProperties = connectionProperties.getJSONObject("financeBusPublicKeyProperties");
+            JSONObject financeBusPublicKeyProperties = new JSONObject(config.getDynamicConfig()).getJSONObject("financeBusPublicKeyProperties");
             publicKey = financeBusPublicKeyProperties.getString("publicKey");
             publicKeyAlias = financeBusPublicKeyProperties.getString("publicKeyAlias");
             publicKeyPassword = financeBusPublicKeyProperties.getString("publicKeyPassword");
 
-            JSONObject tanzaniaHimPrivateKeyProperties = connectionProperties.getJSONObject("tanzaniaHimPrivateKeyProperties");
+            JSONObject tanzaniaHimPrivateKeyProperties = new JSONObject(config.getDynamicConfig()).getJSONObject("tanzaniaHimPrivateKeyProperties");
             privateKey = tanzaniaHimPrivateKeyProperties.getString("privateKey");
             privateKeyAlias = tanzaniaHimPrivateKeyProperties.getString("privateKeyAlias");
             privateKeyPassword = tanzaniaHimPrivateKeyProperties.getString("privateKeyPassword");
