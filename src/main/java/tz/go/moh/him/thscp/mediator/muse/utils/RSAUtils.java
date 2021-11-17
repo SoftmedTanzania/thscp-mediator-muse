@@ -14,9 +14,8 @@ import java.security.cert.Certificate;
 import java.util.Base64;
 
 public class RSAUtils {
-    public static final String FACTORY_TYPE = "RSA";
     public static final String ALGORITHM = "SHA256withRSA";
-    public static final String EC_CURVE_NAME = "secp256k1";
+    public static final String PKCS_12 = "PKCS12";
     private static final Logger log = LoggerFactory.getLogger(RSAUtils.class);
 
     public static String signPayload(String privateKeyString, String payload, String keyAlias, String keyPass) throws Exception {
@@ -48,7 +47,7 @@ public class RSAUtils {
 
     private static PrivateKey getPrivateKey(String keyPass, String keyAlias, String privateKeyString) throws Exception {
 
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        KeyStore keyStore = KeyStore.getInstance(PKCS_12);
 
         byte[] data = Base64.getDecoder().decode(privateKeyString);
         InputStream inputStream = new ByteArrayInputStream(data);
@@ -60,7 +59,7 @@ public class RSAUtils {
 
     private static PublicKey getPublicKey(String keyPass, String keyAlias, String publicKeyString) throws Exception {
 
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        KeyStore keyStore = KeyStore.getInstance(PKCS_12);
 
         byte[] data = Base64.getDecoder().decode(publicKeyString);
         InputStream inputStream = new ByteArrayInputStream(data);
