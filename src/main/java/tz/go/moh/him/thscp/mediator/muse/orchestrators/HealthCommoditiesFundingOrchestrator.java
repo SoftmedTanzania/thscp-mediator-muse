@@ -230,7 +230,11 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
             log.info("Received response from target system");
             FinanceBusResponse.ResponseData responseData = serializer.deserialize(((MediatorHTTPResponse) msg).getBody(), FinanceBusResponse.ResponseData.class);
 
-            FinishRequest finishRequest = new FinishRequest(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey, privateKeyAlias, privateKeyPassword)), "text/json", ((MediatorHTTPResponse) msg).getStatusCode());
+
+            //Necessary evil. Don't remove this. it affects the ordering of elements in the json object to be signed
+            JSONObject responseJsonObject = new JSONObject(new Gson().toJson(generateFinanceBusResponse(responseData, privateKey, privateKeyAlias, privateKeyPassword)));
+
+            FinishRequest finishRequest = new FinishRequest(responseJsonObject.toString(), "text/json", ((MediatorHTTPResponse) msg).getStatusCode());
             (originalRequest).getRequestHandler().tell(finishRequest, getSelf());
         } else {
             unhandled(msg);
@@ -241,7 +245,10 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
         String signature = null;
         if (privateKey != null) {
             try {
-                signature = RSAUtils.signPayload(privateKey, serializer.serializeToString(responseData), privateKeyAlias, privateKeyPassword);
+                //Necessary evil. Don't remove this. it affects the ordering of elements in the json object to be signed
+                JSONObject responseDataJson = new JSONObject(serializer.serializeToString(responseData));
+
+                signature = RSAUtils.signPayload(privateKey, responseDataJson.toString(), privateKeyAlias, privateKeyPassword);
             } catch (Exception e) {
                 e.printStackTrace();
             }
