@@ -130,7 +130,7 @@ public class HealthCommoditiesFundingOrchestrator extends UntypedActor {
             if (StringUtils.isBlank(indicator.getSource()))
                 resultDetailsList.add(new DataValidationResponse.DataValidationResultDetail(indicator.getUuid(), errorMessageResource.getString("SOURCE_IS_BLANK")));
 
-            if (StringUtils.isBlank(indicator.getFacilityId()))
+            if (StringUtils.isBlank(indicator.getInstitutionCode()))
                 resultDetailsList.add(new DataValidationResponse.DataValidationResultDetail(indicator.getUuid(), errorMessageResource.getString("FACILITY_ID_IS_BLANK")));
 
             if (StringUtils.isBlank(indicator.getActivity()))

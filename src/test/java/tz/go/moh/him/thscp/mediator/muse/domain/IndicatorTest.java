@@ -23,7 +23,7 @@ public class IndicatorTest {
 
         indicator.setAllocatedFund(200000);
         indicator.setBudgetedFund(100000);
-        indicator.setFacilityId("0T100000");
+        indicator.setInstitutionCode("0T100000");
         indicator.setFinancialYear("2020/2021");
         indicator.setGfsCode("22010253");
         indicator.setSource("GOT");
@@ -33,7 +33,7 @@ public class IndicatorTest {
         Gson gson = new Gson();
         String actual = gson.toJson(indicator, Indicator.class);
 
-        assertTrue(actual.contains(indicator.getFacilityId()));
+        assertTrue(actual.contains(indicator.getInstitutionCode()));
         assertTrue(actual.contains(indicator.getFinancialYear()));
         assertTrue(actual.contains(indicator.getGfsCode()));
         assertTrue(actual.contains(indicator.getSource()));
@@ -50,7 +50,7 @@ public class IndicatorTest {
 
         Indicator indicator = new Gson().fromJson(IOUtils.toString(stream), Indicator.class);
 
-        assertEquals("0T100000", indicator.getFacilityId());
+        assertEquals("0T100000", indicator.getInstitutionCode());
         assertEquals("2020/2021", indicator.getFinancialYear());
         assertEquals("22010253", indicator.getGfsCode());
         assertEquals("0GT", indicator.getSource());

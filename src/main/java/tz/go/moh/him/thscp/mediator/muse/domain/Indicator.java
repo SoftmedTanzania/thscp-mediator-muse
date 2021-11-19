@@ -35,9 +35,9 @@ public class Indicator {
     @JsonProperty("source")
     private String source;
 
-    @SerializedName("facilityId")
-    @JsonProperty("facilityId")
-    private String facilityId;
+    @SerializedName("institutionCode")
+    @JsonProperty("institutionCode")
+    private String institutionCode;
 
     @SerializedName("activity")
     @JsonProperty("activity")
@@ -99,12 +99,12 @@ public class Indicator {
         this.source = source;
     }
 
-    public String getFacilityId() {
-        return facilityId;
+    public String getInstitutionCode() {
+        return institutionCode;
     }
 
-    public void setFacilityId(String facilityId) {
-        this.facilityId = facilityId;
+    public void setInstitutionCode(String institutionCode) {
+        this.institutionCode = institutionCode;
     }
 
     public String getActivity() {
