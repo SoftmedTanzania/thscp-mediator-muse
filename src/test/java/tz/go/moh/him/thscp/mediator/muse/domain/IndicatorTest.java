@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -21,8 +22,8 @@ public class IndicatorTest {
     public void testIndicatorSerialization() throws Exception {
         Indicator indicator = new Indicator();
 
-        indicator.setAllocatedFund(200000);
-        indicator.setBudgetedFund(100000);
+        indicator.setAllocatedFund(new BigDecimal("200000.00"));
+        indicator.setBudgetedFund(new BigDecimal("100000.00"));
         indicator.setInstitutionCode("0T100000");
         indicator.setFinancialYear("2020/2021");
         indicator.setGfsCode("22010253");
