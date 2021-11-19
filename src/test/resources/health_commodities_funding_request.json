@@ -4,7 +4,7 @@
       "budgetedFund": 12000000,
       "allocatedFund": 7000000,
       "financialYear": "2020/2021",
-      "facilityId": "0T100000",
+      "institutionCode": "0T100000",
       "gfsCode": "22010253",
       "gfsDescription": "Medical Supplies",
       "activity": "D01S02",

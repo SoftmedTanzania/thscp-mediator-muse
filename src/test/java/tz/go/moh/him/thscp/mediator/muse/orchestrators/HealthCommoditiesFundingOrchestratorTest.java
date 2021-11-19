@@ -255,7 +255,7 @@ public class HealthCommoditiesFundingOrchestratorTest extends BaseOrchestratorTe
             assertEquals(expected.get(0).getAllocatedFund(), actual.get(0).getAllocatedFund(), 0.0);
             assertEquals(expected.get(0).getBudgetedFund(), actual.get(0).getBudgetedFund(), 0.0);
             assertEquals(expected.get(0).getGfsCode(), actual.get(0).getGfsCode());
-            assertEquals(expected.get(0).getFacilityId(), actual.get(0).getFacilityId());
+            assertEquals(expected.get(0).getInstitutionCode(), actual.get(0).getInstitutionCode());
             assertEquals(expected.get(0).getSource(), actual.get(0).getSource());
             assertEquals(expected.get(0).getFinancialYear(), actual.get(0).getFinancialYear());
             assertEquals(expected.get(0).getActivity(), actual.get(0).getActivity());
