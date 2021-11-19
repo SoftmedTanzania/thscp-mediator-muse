@@ -3,6 +3,8 @@ package tz.go.moh.him.thscp.mediator.muse.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigDecimal;
+
 /**
  * Represents the Health Commodities Funding Indicator.
  */
@@ -13,11 +15,11 @@ public class Indicator {
 
     @SerializedName("allocatedFund")
     @JsonProperty("allocatedFund")
-    private double allocatedFund;
+    private BigDecimal allocatedFund;
 
     @SerializedName("budgetedFund")
     @JsonProperty("budgetedFund")
-    private double budgetedFund;
+    private BigDecimal budgetedFund;
 
     @SerializedName("financialYear")
     @JsonProperty("financialYear")
@@ -55,19 +57,19 @@ public class Indicator {
         return gfsDescription;
     }
 
-    public double getAllocatedFund() {
+    public BigDecimal getAllocatedFund() {
         return allocatedFund;
     }
 
-    public void setAllocatedFund(int allocatedFund) {
+    public void setAllocatedFund(BigDecimal allocatedFund) {
         this.allocatedFund = allocatedFund;
     }
 
-    public double getBudgetedFund() {
+    public BigDecimal getBudgetedFund() {
         return budgetedFund;
     }
 
-    public void setBudgetedFund(int budgetedFund) {
+    public void setBudgetedFund(BigDecimal budgetedFund) {
         this.budgetedFund = budgetedFund;
     }
 
