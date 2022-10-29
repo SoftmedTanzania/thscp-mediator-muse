@@ -6,7 +6,8 @@ import akka.event.LoggingAdapter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openhim.mediator.engine.*;
-import tz.go.moh.him.thscp.mediator.muse.orchestrators.HealthCommoditiesFundingOrchestrator;
+import tz.go.moh.him.thscp.mediator.muse.orchestrators.PaymentVoucherOrchestrator;
+import tz.go.moh.him.thscp.mediator.muse.orchestrators.PaymentVoucherResponseOrchestrator;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,8 @@ public class MediatorMain {
     private static RoutingTable buildRoutingTable() throws RoutingTable.RouteAlreadyMappedException {
         RoutingTable routingTable = new RoutingTable();
 
-        routingTable.addRoute("/thscp/financing/bulk", HealthCommoditiesFundingOrchestrator.class);
+        routingTable.addRoute("/mmama-muse-payment-channel", PaymentVoucherOrchestrator.class);
+        routingTable.addRoute("/mmama-muse-payment-response-channel", PaymentVoucherResponseOrchestrator.class);
 
         return routingTable;
     }
